@@ -32,9 +32,9 @@ let obstacleSpeed = 3;
 let lastObstacleTime = 0;
 let lastCollectibleTime = 0;
 let obstacleCooldown = 2000;  // Interval to generate obstacles
-let collectibleCooldown = 200;  // Interval to generate collectibles (5 per second)
-let speedIncrement = 0.001;  // Speed increase per frame
-let maxObstacleSpeed = 15;  // Maximum speed limit for obstacles
+let collectibleCooldown = 200;  // Interval to generate collectibles
+let timeLeft = 60; // Time limit in seconds
+let lastUpdate = 0; // Variable to track the last timestamp for updates
 
 // Create an obstacle
 function createObstacle() {
@@ -49,26 +49,13 @@ function createObstacle() {
 
 // Create a collectible
 function createCollectible() {
-    const collectibleX = canvas.width;  // Starting position for collectibles
-    let overlaps = obstacles.some(obstacle => {
-        return (
-            collectibleX < obstacle.x + obstacle.width &&
-            collectibleX + 20 > obstacle.x &&  // Assuming collectible width is 20
-            canvas.height - 100 < obstacle.y + obstacle.height &&  // Assuming collectible height is 20
-            canvas.height - 100 + 20 > obstacle.y
-        );
-    });
-
-    // Only create a collectible if it doesn't overlap
-    if (!overlaps) {
-        const collectible = {
-            x: collectibleX,
-            y: canvas.height - 15,  // Higher position for the collectible
-            width: 20,
-            height: 20
-        };
-        collectibles.push(collectible);
-    }
+    const collectible = {
+        x: canvas.width,
+        y: canvas.height - 15,  // Higher position for the collectible
+        width: 20,
+        height: 20
+    };
+    collectibles.push(collectible);
 }
 
 // Start the game
@@ -78,7 +65,9 @@ function startGame() {
     gameOver = false;
     obstacles = [];
     collectibles = [];
+    timeLeft = 60; // Reset timer to 60 seconds
     runner.y = canvas.height - runner.height;  // Reset runner position
+    lastUpdate = performance.now(); // Initialize last update time
     requestAnimationFrame(gameLoop);
 }
 
@@ -95,9 +84,15 @@ function gameLoop(timestamp) {
     if (gameOver) return;
     if (!gameStarted) return;
 
-    // Increase the obstacle speed gradually
-    obstacleSpeed += speedIncrement;
-    obstacleSpeed = Math.min(obstacleSpeed, maxObstacleSpeed);  // Cap the speed
+    // Check for time update
+    if (timestamp - lastUpdate >= 1000) { // If at least one second has passed
+        timeLeft--; // Decrease time left
+        lastUpdate = timestamp; // Update last timestamp
+    }
+
+    if (timeLeft <= 0) {
+        endGame(); // Trigger game over when time is up
+    }
 
     if (timestamp - lastObstacleTime > obstacleCooldown) {
         createObstacle();
@@ -162,8 +157,9 @@ function gameLoop(timestamp) {
         }
     });
 
-    // Update score
+    // Update score and timer display
     document.getElementById('score').innerText = 'Score: ' + score;
+    document.getElementById('timer').innerText = 'Time Left: ' + timeLeft; // Update timer display
 
     // Keep looping
     requestAnimationFrame(gameLoop);
