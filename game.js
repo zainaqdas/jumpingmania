@@ -68,6 +68,7 @@ function startGame() {
     timeLeft = 60; // Reset timer to 60 seconds
     runner.y = canvas.height - runner.height;  // Reset runner position
     lastUpdate = performance.now(); // Initialize last update time
+    obstacleSpeed = 3; // Reset speed to initial value
     requestAnimationFrame(gameLoop);
 }
 
@@ -88,6 +89,9 @@ function gameLoop(timestamp) {
     if (timestamp - lastUpdate >= 1000) { // If at least one second has passed
         timeLeft--; // Decrease time left
         lastUpdate = timestamp; // Update last timestamp
+
+        // Increase obstacle speed gradually as time progresses
+        obstacleSpeed += 0.1; // Gradually increase speed by 0.1 every second
     }
 
     if (timeLeft <= 0) {
