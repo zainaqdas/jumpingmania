@@ -31,8 +31,8 @@ let gameStarted = false;
 let obstacleSpeed = 3;
 let lastObstacleTime = 0;
 let lastCollectibleTime = 0;
-let obstacleCooldown = 2000;  // Interval to generate obstacles
-let collectibleCooldown = 200;  // Interval to generate collectibles
+let obstacleCooldown = 1000;  // Interval to generate obstacles
+let collectibleCooldown = 100;  // Interval to generate collectibles
 let timeLeft = 60; // Time limit in seconds
 let lastUpdate = 0; // Variable to track the last timestamp for updates
 
@@ -40,7 +40,7 @@ let lastUpdate = 0; // Variable to track the last timestamp for updates
 function createObstacle() {
     const obstacle = {
         x: canvas.width,
-        y: canvas.height - 50,
+        y: canvas.height - 30,
         width: 20,
         height: 20,
     };
